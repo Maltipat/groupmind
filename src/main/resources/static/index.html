@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GroupMind — Greenwood Residency knowledge desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #14202b;
+    --ink-soft: #38505f;
+    --muted: #6a7d89;
+    --paper: #eef2f4;
+    --card: #ffffff;
+    --line: #dde5e9;
+    --line-soft: #e9eff2;
+    /* the "verified" green appears ONLY on corroboration — agreement is the accent */
+    --agree: #12855c;
+    --agree-soft: #e3f4ec;
+    --agree-line: #b6e0cd;
+    --header: #0f1620;
+    --shadow: 0 1px 2px rgba(20,32,43,.06), 0 8px 24px rgba(20,32,43,.06);
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px 80px; }
+
+  header.top {
+    background: var(--header);
+    color: #fff;
+    padding: 22px 0 24px;
+    margin-bottom: 30px;
+  }
+  header.top .wrap { padding-bottom: 0; }
+  .brand {
+    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  }
+  .wordmark {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 26px; letter-spacing: -0.02em;
+  }
+  .wordmark .dot { color: #4fd39c; }
+  .tagline {
+    font-size: 13.5px; color: #9db0bd; font-weight: 500;
+  }
+  .lede {
+    margin: 14px 0 0; max-width: 560px;
+    font-size: 14.5px; color: #b9c7d1;
+  }
+
+  .askbar {
+    display: flex; gap: 10px; margin-top: -8px;
+    background: var(--card);
+    padding: 10px; border-radius: var(--radius);
+    box-shadow: var(--shadow); border: 1px solid var(--line);
+  }
+  .askbar input {
+    flex: 1; border: none; outline: none; background: transparent;
+    font-family: inherit; font-size: 16px; color: var(--ink);
+    padding: 10px 12px;
+  }
+  .askbar input::placeholder { color: #9aabb5; }
+  .askbar button {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600; font-size: 15px;
+    border: none; border-radius: 9px; cursor: pointer;
+    background: var(--ink); color: #fff;
+    padding: 0 20px;
+    transition: background .15s ease;
+  }
+  .askbar button:hover { background: #223546; }
+  .askbar button:disabled { opacity: .5; cursor: default; }
+
+  .examples { margin: 14px 2px 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .examples span { font-size: 12.5px; color: var(--muted); margin-right: 2px; align-self: center; }
+  .chip {
+    font-size: 12.5px; font-weight: 500;
+    background: #fff; border: 1px solid var(--line);
+    color: var(--ink-soft); border-radius: 999px;
+    padding: 6px 12px; cursor: pointer;
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .chip:hover { border-color: var(--agree-line); color: var(--agree); }
+
+  /* ---- answer ---- */
+  #result { margin-top: 30px; }
+
+  .answer-card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: var(--radius); box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  /* the signature: the consensus stamp */
+  .consensus {
+    background: var(--agree-soft);
+    border-bottom: 1px solid var(--agree-line);
+    padding: 18px 22px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .stamp {
+    flex-shrink: 0;
+    width: 58px; height: 58px; border-radius: 50%;
+    background: var(--agree); color: #fff;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    line-height: 1;
+    box-shadow: 0 4px 10px rgba(18,133,92,.28);
+  }
+  .stamp .n { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 24px; }
+  .stamp .u { font-size: 9px; letter-spacing: .12em; text-transform: uppercase; margin-top: 2px; opacity: .9; }
+  .consensus .headline {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600;
+    font-size: 16.5px; color: #0c5b3f;
+  }
+  .consensus .who { margin-top: 7px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .who .initials {
+    font-size: 11px; font-weight: 600; color: var(--agree);
+    background: #fff; border: 1px solid var(--agree-line);
+    border-radius: 999px; padding: 3px 9px;
+  }
+
+  .no-consensus {
+    padding: 14px 22px; background: #f6f8f9; border-bottom: 1px solid var(--line-soft);
+    font-size: 13.5px; color: var(--muted);
+  }
+
+  .answer-body { padding: 20px 22px 8px; }
+  .answer-body .label {
+    font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 8px;
+  }
+  .answer-body .text {
+    font-size: 15.5px; color: var(--ink); white-space: pre-wrap;
+  }
+
+  .cites { padding: 8px 22px 22px; }
+  .cites .label {
+    font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin: 14px 0 12px;
+  }
+  .receipt {
+    display: flex; gap: 12px; padding: 11px 0;
+    border-top: 1px solid var(--line-soft);
+  }
+  .receipt .av {
+    flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%;
+    background: #eef2f4; color: var(--ink-soft);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12.5px; font-weight: 600;
+  }
+  .receipt.backer .av { background: var(--agree-soft); color: var(--agree); }
+  .receipt .rc { flex: 1; min-width: 0; }
+  .receipt .meta {
+    display: flex; gap: 8px; align-items: baseline; margin-bottom: 2px;
+  }
+  .receipt .sender { font-weight: 600; font-size: 13.5px; color: var(--ink); }
+  .receipt .ts { font-size: 11.5px; color: var(--muted); }
+  .receipt .id { font-size: 11px; color: #9aabb5; margin-left: auto; font-variant-numeric: tabular-nums; }
+  .receipt .msg { font-size: 14px; color: var(--ink-soft); white-space: pre-wrap; word-wrap: break-word; }
+
+  .foot {
+    padding: 12px 22px; border-top: 1px solid var(--line-soft);
+    font-size: 12px; color: var(--muted);
+    display: flex; align-items: center; gap: 7px;
+  }
+  .mode-pill {
+    font-size: 11px; font-weight: 600; border-radius: 999px; padding: 2px 9px;
+  }
+  .mode-pill.llm { background: #eae6fb; color: #5a3fb8; }
+  .mode-pill.template { background: #eef2f4; color: var(--ink-soft); }
+
+  .state { text-align: center; padding: 40px 10px; color: var(--muted); font-size: 14px; }
+  .spinner {
+    width: 22px; height: 22px; border: 2.5px solid var(--line);
+    border-top-color: var(--agree); border-radius: 50%;
+    margin: 0 auto 12px; animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+
+  :focus-visible { outline: 2px solid var(--agree); outline-offset: 2px; }
+
+  @media (max-width: 520px) {
+    .askbar { flex-direction: column; }
+    .askbar button { padding: 12px; }
+    .consensus { flex-direction: row; }
+  }
+</style>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <div class="brand">
+        <span class="wordmark">GroupMind<span class="dot">.</span></span>
+        <span class="tagline">Greenwood Residency · A-Wing knowledge desk</span>
+      </div>
+      <p class="lede">Ask what the group already knows. Answers come straight from residents' own
+      messages — and when several people independently agree, you'll see exactly how many.</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="askbar">
+      <input id="q" type="text" autocomplete="off"
+             placeholder="Ask the group…  e.g. who do people recommend for AC repair?"
+             aria-label="Ask a question" />
+      <button id="ask">Ask</button>
+    </div>
+
+    <div class="examples">
+      <span>Try:</span>
+      <button class="chip">who do people recommend for AC repair?</button>
+      <button class="chip">is there a good electrician?</button>
+      <button class="chip">who fixes plumbing leaks?</button>
+      <button class="chip">what's the visitor parking rule?</button>
+    </div>
+
+    <div id="result"></div>
+  </main>
+
+<script>
+  const qInput = document.getElementById('q');
+  const askBtn = document.getElementById('ask');
+  const result = document.getElementById('result');
+
+  document.querySelectorAll('.chip').forEach(c => {
+    c.addEventListener('click', () => { qInput.value = c.textContent; ask(); });
+  });
+  askBtn.addEventListener('click', ask);
+  qInput.addEventListener('keydown', e => { if (e.key === 'Enter') ask(); });
+
+  function initials(name) {
+    const parts = (name || '?').trim().split(/\s+/);
+    let s = parts[0][0] || '?';
+    if (parts.length > 1) s += parts[parts.length - 1][0];
+    return s.toUpperCase();
+  }
+
+  function fmtTime(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (isNaN(d)) return iso;
+    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) +
+           ' · ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function esc(s) {
+    return (s || '').replace(/[&<>"]/g, c =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  }
+
+  async function ask() {
+    const question = qInput.value.trim();
+    if (!question) return;
+    askBtn.disabled = true;
+    result.innerHTML = '<div class="state"><div class="spinner"></div>Searching the group\u2019s memory…</div>';
+
+    try {
+      const res = await fetch('/api/query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question })
+      });
+      if (!res.ok) throw new Error('Request failed (' + res.status + ')');
+      render(await res.json());
+    } catch (err) {
+      result.innerHTML = '<div class="state">Couldn\u2019t reach the knowledge desk. ' +
+        'Is the backend running on this port? <br><small>' + esc(err.message) + '</small></div>';
+    } finally {
+      askBtn.disabled = false;
+    }
+  }
+
+  function render(data) {
+    const top = (data.consensus && data.consensus.length) ? data.consensus[0] : null;
+    const backerSenders = new Set(top ? top.senders : []);
+
+    let head;
+    if (top) {
+      const chips = top.senders.map(s => '<span class="initials">' + esc(s) + '</span>').join('');
+      head =
+        '<div class="consensus">' +
+          '<div class="stamp"><span class="n">' + top.distinctSenderCount + '</span>' +
+          '<span class="u">agree</span></div>' +
+          '<div>' +
+            '<div class="headline">' + top.distinctSenderCount +
+              (top.distinctSenderCount === 1 ? ' resident points' : ' residents independently point') +
+              ' to the same answer</div>' +
+            '<div class="who">' + chips + '</div>' +
+          '</div>' +
+        '</div>';
+    } else {
+      head = '<div class="no-consensus">No single answer was backed by multiple people — ' +
+             'showing the most relevant messages below.</div>';
+    }
+
+    const answer =
+      '<div class="answer-body">' +
+        '<div class="label">Answer</div>' +
+        '<div class="text">' + esc(data.answer) + '</div>' +
+      '</div>';
+
+    let cites = '';
+    if (data.citations && data.citations.length) {
+      const rows = data.citations.slice(0, 8).map(c => {
+        const backer = backerSenders.has(c.sender);
+        return '<div class="receipt' + (backer ? ' backer' : '') + '">' +
+          '<div class="av">' + esc(initials(c.sender)) + '</div>' +
+          '<div class="rc">' +
+            '<div class="meta">' +
+              '<span class="sender">' + esc(c.sender) + '</span>' +
+              '<span class="ts">' + esc(fmtTime(c.timestamp)) + '</span>' +
+              '<span class="id">#' + c.id + '</span>' +
+            '</div>' +
+            '<div class="msg">' + esc(c.text) + '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+      cites = '<div class="cites"><div class="label">Cited from the group</div>' + rows + '</div>';
+    }
+
+    const mode = data.llmUsed
+      ? '<span class="mode-pill llm">Claude synthesis</span>'
+      : '<span class="mode-pill template">Grounded summary</span>';
+    const foot = '<div class="foot">' + mode +
+      '<span>Answer grounded in ' + (data.citations ? data.citations.length : 0) +
+      ' retrieved messages.</span></div>';
+
+    result.innerHTML = '<div class="answer-card">' + head + answer + cites + foot + '</div>';
+  }
+</script>
+</body>
+</html>

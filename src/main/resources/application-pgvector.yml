@@ -1,0 +1,21 @@
+# Activated with: SPRING_PROFILES_ACTIVE=pgvector  (and built with -Ppgvector)
+#
+# Spring AI's pgvector starter auto-configures a PgVectorStore from these settings,
+# which then replaces the in-memory SimpleVectorStore (see VectorStoreConfig — its
+# bean is @Profile("!pgvector")). Nothing else in the app changes.
+
+spring:
+  datasource:
+    url: ${GROUPMIND_DB_URL:jdbc:postgresql://localhost:5432/groupmind}
+    username: ${GROUPMIND_DB_USER:groupmind}
+    password: ${GROUPMIND_DB_PASSWORD:groupmind}
+
+  ai:
+    vectorstore:
+      pgvector:
+        # Create the vector table/extension on startup if missing.
+        initialize-schema: true
+        # all-MiniLM-L6-v2 produces 384-dim embeddings.
+        dimensions: 384
+        index-type: hnsw
+        distance-type: cosine_distance

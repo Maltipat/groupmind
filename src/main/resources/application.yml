@@ -1,0 +1,35 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: groupmind
+
+  ai:
+    # ---- Embeddings: local ONNX all-MiniLM-L6-v2 (no API key needed) ----
+    # spring-ai-starter-model-transformers auto-configures this model with no
+    # further config. It's downloaded once on first run and cached under
+    # ~/.spring-ai, which is what makes semantic retrieval work key-free.
+
+    # ---- Chat / synthesis: OFF by default so the app runs with zero keys ----
+    # Set to "anthropic" and provide ANTHROPIC_API_KEY to have Claude write the
+    # final answer. With "none", a deterministic templated answer is used instead.
+    model:
+      chat: ${GROUPMIND_CHAT_MODEL:none}
+
+    anthropic:
+      api-key: ${ANTHROPIC_API_KEY:}
+      chat:
+        options:
+          model: claude-sonnet-4-6
+          temperature: 0.2
+
+# GroupMind tunables (see GroupMindProperties)
+groupmind:
+  data-path: classpath:data/greenwood_residency_chat.txt
+  top-k: 10
+  consensus-min-senders: 2
+
+logging:
+  level:
+    com.betterplace.groupmind: INFO
